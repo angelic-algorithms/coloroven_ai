@@ -9,6 +9,13 @@ export default function ColorSchemes() {
   const [colorSchemes, setColorSchemes] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const capitalizeWords = (str) => {
+    return str
+      .split(' ')               // Split string into words by spaces
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+      .join(' ');               // Join the words back into a single string
+  };
+
   useEffect(() => {
     if (color) {
       fetch(`/api/color-schemes-api?r=${parseInt(color.slice(1, 3), 16)}&g=${parseInt(color.slice(3, 5), 16)}&b=${parseInt(color.slice(5, 7), 16)}`)
@@ -25,7 +32,7 @@ export default function ColorSchemes() {
     <div className={styles.container}>
       {/* Back Button */}
       <div className={styles.backButton}>
-        <Link href="/manual-entry">
+        <Link href={`/manual-entry?color=${encodeURIComponent(color)}`}>
           <button className={styles.backButtonText}>← BACK</button>
         </Link>
       </div>
@@ -36,21 +43,23 @@ export default function ColorSchemes() {
         <p>Loading color schemes...</p>
       ) : colorSchemes ? (
         <div className={styles.schemeContainer}>
-          {Object.entries(colorSchemes).map(([schemeName, colors]) => (
-            <div key={schemeName} className={styles.schemeItem}>
-              <p>{schemeName.replace(/([A-Z])/g, ' $1').trim()}</p>
-              <div className={styles.colorBoxes}>
-                {colors.map((col, index) => (
-                  <div
-                    key={index}
-                    className={styles.colorBox}
-                    style={{ backgroundColor: `rgb(${col.r},${col.g},${col.b})` }}
-                  ></div>
-                ))}
-              </div>
+        {Object.entries(colorSchemes).map(([schemeName, colors]) => (
+          <div key={schemeName} className={styles.schemeItem}>
+            <p className={styles.schemeTitle}>
+              <strong>{capitalizeWords(schemeName.replace(/([A-Z])/g, ' $1').trim())}</strong>
+            </p>
+            <div className={styles.colorBoxes}>
+              {colors.map((col, index) => (
+                <div
+                  key={index}
+                  className={styles.colorBox}
+                  style={{ backgroundColor: `rgb(${col.r},${col.g},${col.b})` }}
+                ></div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       ) : (
         <p>No color schemes found. Try again.</p>
       )}

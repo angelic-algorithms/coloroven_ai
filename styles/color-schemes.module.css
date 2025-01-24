@@ -40,16 +40,23 @@
     width: 80%;
     max-width: 600px;
   }
+
+  .schemeTitle {
+    text-align: left; /* Aligns the title to the left */
+    margin-left: 10px; /* Optional: adjust for desired spacing */
+    font-size: 1.5rem; /* Adjust font size if needed */
+    font-weight: bold; /* Ensure it stays bold */
+  }  
   
   .schemeItem {
     background-color: #f5f5f5;
     padding: 20px;
     margin-bottom: 15px;
     border-radius: 8px;
-    text-align: center; /* Center the text */
+    text-align: left; /* Center the text */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center contents horizontally */
+    align-items: flex-start; /* Center contents horizontally */
   }
 
   .schemeItem p {
@@ -59,8 +66,10 @@
   
   .colorBoxes {
     display: flex;
+    justify-content: center; /* Center the color boxes */
     gap: 10px;
     margin-top: 10px;
+    width: 100%; /* Ensure the flex container spans the entire width */
   }
   
   .colorBox {
