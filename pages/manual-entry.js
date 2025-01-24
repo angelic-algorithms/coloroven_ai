@@ -22,8 +22,9 @@ export default function ManualEntry() {
 
   // Navigate to the color schemes page with the selected color
   const handleCook = () => {
-    router.push(`/color-schemes?color=${color}`);
+    router.push(`/color-schemes?color=${encodeURIComponent(color)}`);
   };
+  
 
   return (
     <div className={styles.container}>
