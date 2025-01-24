@@ -25,8 +25,6 @@
     margin-top: 20px;
     cursor: pointer;
   }
-
-
   
   .colorPicker {
     background-color: black;
@@ -34,8 +32,18 @@
   }
   
   .cameraDisabled {
-    background-color: #ccc;
-    color: #666;
+    background-color: #44a900;
+    color: black;
     cursor: not-allowed;
   }
+  
+  .cameraEnabled {
+    background-color: black;
+    color: white;
+  }
+  
+  .cameraEnabled:hover {
+    background-color: #333;
+  }
+  
   
