@@ -1,0 +1,86 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .backButton {
+    align-self: flex-start;
+    margin: 20px;
+  }
+  
+  .backButtonText {
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  .selectedColors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+
+  .colorBox {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    border: 2px solid #000;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    /* background-color: #CCCCCC; Default gray if color fails */
+  }
+
+  .colorBox:hover {
+    opacity: 0.8;
+  }
+  
+  .searchInput {
+    width: 80%;
+    max-width: 400px;
+    padding: 12px;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .searchButton {
+    background-color: black;
+    color: white;
+    font-size: 1.5rem;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+
+  .searchButton:hover {
+    background-color: #333;
+  }
+  
+  .response {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
