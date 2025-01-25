@@ -8,6 +8,7 @@ export default function Search() {
   const { color, colors } = router.query;
   const [query, setQuery] = useState('');
   const [chatResponse, setChatResponse] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   // Decode color query parameter and ensure they are valid
   const selectedColors = colors ? decodeURIComponent(colors).split('|').map(color => color.trim()) : [];
@@ -18,21 +19,45 @@ export default function Search() {
     return hexPattern.test(color) || rgbPattern.test(color);
   };
 
-  useEffect(() => {
-    if (!colors) {
-        router.push('/color-schemes'); // Redirect if no colors are selected
-      }
-    }, [colors, router]);
-
+useEffect(() => {
+  if (!colors) {
+      router.push('/color-schemes'); // Redirect if no colors are selected
+    }
+  }, [colors, router]);
 
   const handleSearch = async () => {
     if (!query) return alert('Please enter a search query.');
 
-    // Simulating AI Chat Request
-    const mockResponse = `Searching for ${query} in colors: ${selectedColors.join(',')}`;
-    setChatResponse(mockResponse);
-  };
+    try {
+      const response = await fetch('/api/gpt-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, colors: colors.split('|') }),
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI response');
+      }
+
+      const data = await response.json();
+      setChatResponse(data.response);
+
+      // Extracting formatted results from AI response
+      const parsedResults = data.response.match(/\[(.*?)\]\((.*?)\)/g) || [];
+      const formattedResults = parsedResults.map((item) => {
+        const match = item.match(/\[(.*?)\]\((.*?)\)/);
+        return { name: match[1], link: match[2] };
+      });
+
+      setSearchResults(formattedResults);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error fetching AI response');
+    }
+  };
+    
+    
+    
   return (
     <div className={styles.container}>
       <div className={styles.backButton}>
@@ -51,17 +76,17 @@ export default function Search() {
             key={index}
             className={styles.colorBox}
             style={{
-              backgroundColor: color,
+              backgroundColor: validColor,
             }}
           ></div>
           );
         })}
       </div>
-      
+
       <input
         type="text"
         className={styles.searchInput}
-        placeholder="Type your query... e.g. Find curtains"
+        placeholder="Type your color query"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -70,7 +95,22 @@ export default function Search() {
         SEARCH
       </button>
 
-      {chatResponse && <p className={styles.response}>{chatResponse}</p>}
+      {searchResults.length > 0 ? (
+        <div className={styles.searchResults}>
+          <h2>Search Results:</h2>
+          <ul>
+            {searchResults.map((item, index) => (
+              <li key={index}>
+                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        chatResponse && <p className={styles.response}>{chatResponse}</p>
+      )}
     </div>
   );
 }
