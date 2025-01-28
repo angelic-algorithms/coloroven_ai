@@ -128,7 +128,6 @@ export default function CameraScan() {
 
       <strong><p className={styles.subtitle}>Click and Hold to Capture a Color</p></strong>
 
-
       {/* Camera Feed */}
       <video
         ref={videoRef}
