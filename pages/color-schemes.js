@@ -5,10 +5,16 @@ import styles from '../styles/color-schemes.module.css';
 
 export default function ColorSchemes() {
   const router = useRouter();
-  const { color, colors } = router.query; // Get color from query params
+  const { color, colors, source } = router.query; // Get color from query params
   const [colorSchemes, setColorSchemes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedColors, setSelectedColors] = useState([]);
+
+  // Determine the back URL based on the source
+  const backUrl =
+  source === 'camera-scan'
+    ? `/camera-scan`
+    : `/manual-entry?color=${encodeURIComponent(color)}`;
 
   const capitalizeWords = (str) => {
     return str
@@ -88,12 +94,15 @@ export default function ColorSchemes() {
   return (
     <div className={styles.container}>
       <div className={styles.backButton}>
-        <Link href={`/manual-entry?color=${encodeURIComponent(color)}`}>
+        <Link href={backUrl}>
           <button className={styles.backButtonText}>← BACK</button>
         </Link>
-      </div>
+    </div>
 
       <h1 className={styles.title}>COLOR SCHEMES</h1>
+      
+      <strong><p className={styles.subtitle}>Click all your favorite matching colors!</p></strong>
+
 
       {loading ? (
         <p>Loading color schemes...</p>

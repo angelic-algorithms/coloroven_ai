@@ -114,6 +114,14 @@
   background-color: #333;
 }
 
+.subtitle {
+  font-size: 1.2rem;
+  color: #555; /* Slightly lighter than black */
+  margin-top: -15px; /* Optional: Adjust spacing relative to the title */
+  margin-bottom: 20px; /* Space below the subtitle */
+  text-align: center; /* Center align to match the title */
+}
+
 /* Checkmark to show selection visually */
 .checkmark {
   position: absolute;

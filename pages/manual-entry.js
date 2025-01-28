@@ -49,7 +49,7 @@ export default function ManualEntry() {
       setError('Please enter a valid hex color before proceeding.');
       return;
     }
-    router.push(`/color-schemes?color=${encodeURIComponent(color)}`);
+    router.push(`/color-schemes?color=${encodeURIComponent(color)}&source=manual-entry`);
   };
   
 
