@@ -22,8 +22,28 @@
   text-align: center; /* Center align to match the title */
 }
 
+/* Top Bar for Aligning Back Button and Camera Selector */
+.topBar {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between; /* Space items apart */
+  align-items: center;
+}
+
+/* Back Button Styling */
+.backButtonContainer {
+  flex: 1; /* Pushes camera selector to the right */
+}
+
 .backButtonText {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 8px 12px;
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
@@ -73,15 +93,35 @@
   border: 2px solid #000;
 }
 
+.topRightContainer {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Camera Selector Container */
+.cameraSelectContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cameraLabel {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
 .cameraSelect {
-  margin-top: 5px;
-  padding: 10px;
+  padding: 8px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 60%;
-  max-width: 200px;
-  margin-bottom: 15px;
+  background-color: white;
+  cursor: pointer;
 }
 
 .crosshair {

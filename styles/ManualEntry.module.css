@@ -1,82 +1,186 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #ffffff;
-    color: #000000;
-    padding: 20px;
-  }
-  
-  .backButton {
-    align-self: flex-start;
-    margin: 20px;
-  }
-  
-  .title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-  
-  .colorWheel {
-    margin-bottom: 2rem;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
 
-  .spacer {
-    margin-bottom: 20px; /* Adjust the spacing as needed */
-  }
-  
-  
-  .hexInput {
-    width: 320px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .divider {
-    width: 320px;
-    border-top: 1px solid #666;
-    margin-bottom: 2rem;
-  }
+.colorSelectionContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* Spacing between sliders and wheel */
+}
 
-  .error {
-    color: red;
-    font-size: 1rem;
-    margin-top: 10px;
-  }  
+.slidersContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.saturationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.saturationLabel {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.saturationSlider,
+.lightnessSlider {
+  width: 10px;
+  height: 150px;
+  writing-mode: vertical-lr;
+  appearance: slider-vertical;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(to top, #000, #fff);
+}
+
+/* Hue Slider */
+.hueSlider {
+  width: 10px;
+  height: 150px;
+  writing-mode: vertical-lr; /* Make the slider vertical */
+  appearance: slider-vertical;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(to top, red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.hueSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.hueSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.colorWheelContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   
-  .colorDisplayContainer {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
+.backButton {
+  align-self: flex-start;
+  margin: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.colorWheel {
+  margin-bottom: 2rem;
+}
+
+.spacer {
+  margin-bottom: 20px; /* Adjust the spacing as needed */
+}
+
+
+.hexInput {
+  width: 320px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+.divider {
+  width: 320px;
+  border-top: 1px solid #666;
+  margin-bottom: 2rem;
+}
+
+.error {
+  color: red;
+  font-size: 1rem;
+  margin-top: 10px;
+}  
+
+.colorDisplayContainer {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.colorDisplayBox {
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cookButton {
+  background: #000000;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 15px 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.cookButton:hover {
+  background: #333333;
+}
+
+.sliderLabel {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.saturationSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.saturationSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
   
-  .colorDisplayBox {
-    width: 96px;
-    height: 96px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .cookButton {
-    background: #000000;
-    color: #ffffff;
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 15px 40px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .cookButton:hover {
-    background: #333333;
-  }
   
