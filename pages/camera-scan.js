@@ -37,7 +37,7 @@ export default function CameraScan() {
   
       let filteredDevices = [];
       if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
-      if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera (Default)" });
+      if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
   
       if (filteredDevices.length === 0) {
         filteredDevices = videoDevices.map((device, index) => ({
@@ -48,6 +48,7 @@ export default function CameraScan() {
   
       setDevices(filteredDevices);
   
+      // Default to back camera if available
       if (filteredDevices.length > 0) {
         setSelectedDeviceId(filteredDevices[0].deviceId);
         startCamera(filteredDevices[0].deviceId);
@@ -65,12 +66,12 @@ export default function CameraScan() {
         video: { deviceId: { exact: deviceId } },
       };
   
-      if (isIOS) {
+      if (isIOS && deviceId.includes("back")) {
         constraints = {
           video: {
             deviceId: { exact: deviceId },
-            zoom: 1.0, // Set default zoom level for iOS
-            facingMode: "environment", // Tries to select the standard back camera
+            zoom: 1.0, // Sets default zoom level for iOS
+            facingMode: "environment", // Ensures correct back camera selection
           },
         };
       }
@@ -84,8 +85,7 @@ export default function CameraScan() {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
     }
-  };
-  
+  };  
 
   const stopCamera = () => {
     if (streamRef.current) {
