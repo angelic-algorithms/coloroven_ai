@@ -11,6 +11,7 @@ export default function CameraScan() {
   const [devices, setDevices] = useState([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [selectedColor, setSelectedColor] = useState(null);
+  const [colorMagnifier, setColorMagnifier] = useState(null); // For magnified color effect
 
   useEffect(() => {
     getCameraDevices();
@@ -21,10 +22,10 @@ export default function CameraScan() {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === 'videoinput');
-  
+
       let frontCamera = null;
       let backCamera = null;
-  
+
       videoDevices.forEach(device => {
         const label = device.label.toLowerCase();
         if ((label.includes("front") || label.includes("selfie")) && !frontCamera) {
@@ -33,23 +34,20 @@ export default function CameraScan() {
           backCamera = device;
         }
       });
-  
-      // If front & back cameras exist, show only them
+
       let filteredDevices = [];
       if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
       if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
-  
-      // If no front/back labels detected, fall back to listing all cameras
+
       if (filteredDevices.length === 0) {
         filteredDevices = videoDevices.map((device, index) => ({
           ...device,
           customLabel: device.label || `Camera ${index + 1}`
         }));
       }
-  
+
       setDevices(filteredDevices);
-  
-      // Default to back camera if available
+
       if (filteredDevices.length > 0) {
         setSelectedDeviceId(filteredDevices[0].deviceId);
         startCamera(filteredDevices[0].deviceId);
@@ -59,7 +57,6 @@ export default function CameraScan() {
       alert("Failed to access cameras.");
     }
   };
-  
 
   const startCamera = async (deviceId) => {
     try {
@@ -111,6 +108,16 @@ export default function CameraScan() {
     const hexColor = `#${pixelData[0].toString(16).padStart(2, "0")}${pixelData[1].toString(16).padStart(2, "0")}${pixelData[2].toString(16).padStart(2, "0")}`;
 
     setSelectedColor(hexColor);
+
+    // Show magnifier with selected color
+    setColorMagnifier({
+      color: hexColor,
+      x: event.clientX,
+      y: event.clientY
+    });
+
+    // Hide magnifier after 1 second
+    setTimeout(() => setColorMagnifier(null), 1000);
   };
 
   const handleCook = () => {
@@ -125,14 +132,12 @@ export default function CameraScan() {
     <div className={styles.container}>
       {/* TOP BAR */}
       <div className={styles.topBar}>
-        {/* Back Button - Left */}
         <div className={styles.backButtonContainer}>
           <Link href="/">
             <button className={styles.backButtonText}>← BACK</button>
           </Link>
         </div>
 
-        {/* Camera Selector - Right */}
         <div className={styles.cameraSelectContainer}>
           <label className={styles.cameraLabel}>Select a Camera:</label>
           <select className={styles.cameraSelect} onChange={handleDeviceChange} value={selectedDeviceId}>
@@ -149,22 +154,14 @@ export default function CameraScan() {
 
       <strong><p className={styles.subtitle}>Select a Color From the Video Feed</p></strong>
 
-      {/* Camera Feed */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        className={styles.cameraView}
-        onClick={handleColorSelection}
-      ></video>
+      <video ref={videoRef} autoPlay playsInline className={styles.cameraView} onClick={handleColorSelection}></video>
 
-      {/* Hidden Canvas for Color Processing */}
       <canvas ref={canvasRef} className={styles.hiddenCanvas}></canvas>
-
+      
       {/* Color Display Box */}
       {selectedColor && (
         <div className={styles.colorDisplayContainer}>
-          <p>Selected Color:</p>
+          <strong><p>Selected Color:</p></strong>
           <div
             className={styles.colorDisplay}
             style={{ backgroundColor: selectedColor }}
@@ -173,12 +170,19 @@ export default function CameraScan() {
         </div>
       )}
 
-      {/* Cook Button */}
-      <button
-        className={styles.cookButton}
-        onClick={handleCook}
-        disabled={!selectedColor}
-      >
+      {/* Magnifier Effect */}
+      {colorMagnifier && (
+        <div
+          className={styles.colorMagnifier}
+          style={{
+            left: `${colorMagnifier.x}px`,
+            top: `${colorMagnifier.y}px`,
+            backgroundColor: colorMagnifier.color,
+          }}
+        ></div>
+      )}
+
+      <button className={styles.cookButton} onClick={handleCook} disabled={!selectedColor}>
         COOK
       </button>
     </div>

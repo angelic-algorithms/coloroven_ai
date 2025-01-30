@@ -15,6 +15,22 @@
   -ms-user-select: none; /* IE/Edge */
 }
 
+.colorMagnifier {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid white;
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  animation: fadeOut 1s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
 
 .backButton {
   align-self: flex-start;
