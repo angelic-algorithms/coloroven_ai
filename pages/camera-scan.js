@@ -48,9 +48,9 @@ export default function CameraScan() {
   
       setDevices(filteredDevices);
   
-      // Ensure we have a valid camera selected
+      // Select the first available camera (default to back)
       if (filteredDevices.length > 0) {
-        const defaultDevice = backCamera || frontCamera || filteredDevices[0]; // Prioritize back camera
+        const defaultDevice = backCamera || frontCamera || filteredDevices[0];
         setSelectedDeviceId(defaultDevice.deviceId);
         startCamera(defaultDevice.deviceId);
       }
@@ -71,8 +71,14 @@ export default function CameraScan() {
       if (isIOS) {
         constraints.video = {
           deviceId: { exact: deviceId },
-          facingMode: deviceId.includes("back") ? "environment" : "user", // Ensures correct camera selection
+          facingMode: "user", // Default to front camera, overridden by selection
         };
+  
+        // Ensure selected camera is used correctly
+        const selectedCamera = devices.find((device) => device.deviceId === deviceId);
+        if (selectedCamera && selectedCamera.customLabel.includes("Back Camera")) {
+          constraints.video.facingMode = "environment";
+        }
       }
   
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -84,7 +90,7 @@ export default function CameraScan() {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
     }
-  };
+  };  
   
 
   const stopCamera = () => {
@@ -152,7 +158,7 @@ export default function CameraScan() {
           </Link>
         </div>
 
-        {/* Camera Selector - Right */}
+       {/* Camera Selector - Right */}
         <div className={styles.cameraSelectContainer}>
           <label className={styles.cameraLabel}>Select a Camera:</label>
           <select className={styles.cameraSelect} onChange={handleDeviceChange} value={selectedDeviceId}>
