@@ -21,30 +21,45 @@ export default function CameraScan() {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-      // Identify front & back cameras
-      const labeledDevices = videoDevices.map((device, index) => {
+  
+      let frontCamera = null;
+      let backCamera = null;
+  
+      videoDevices.forEach(device => {
         const label = device.label.toLowerCase();
-        if (label.includes("front")) {
-          return { ...device, customLabel: "Front Camera" };
-        } else if (label.includes("back") || label.includes("rear")) {
-          return { ...device, customLabel: "Back Camera" };
-        } else {
-          return { ...device, customLabel: device.label || `Camera ${index + 1}` };
+        if ((label.includes("front") || label.includes("selfie")) && !frontCamera) {
+          frontCamera = device;
+        } else if ((label.includes("back") || label.includes("rear")) && !backCamera) {
+          backCamera = device;
         }
       });
-
-      setDevices(labeledDevices);
-
-      if (labeledDevices.length > 0) {
-        setSelectedDeviceId(labeledDevices[0].deviceId);
-        startCamera(labeledDevices[0].deviceId);
+  
+      // If front & back cameras exist, show only them
+      let filteredDevices = [];
+      if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
+      if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
+  
+      // If no front/back labels detected, fall back to listing all cameras
+      if (filteredDevices.length === 0) {
+        filteredDevices = videoDevices.map((device, index) => ({
+          ...device,
+          customLabel: device.label || `Camera ${index + 1}`
+        }));
+      }
+  
+      setDevices(filteredDevices);
+  
+      // Default to back camera if available
+      if (filteredDevices.length > 0) {
+        setSelectedDeviceId(filteredDevices[0].deviceId);
+        startCamera(filteredDevices[0].deviceId);
       }
     } catch (error) {
-      console.error('Error accessing camera devices:', error);
-      alert('Failed to access cameras.');
+      console.error("Error accessing camera devices:", error);
+      alert("Failed to access cameras.");
     }
   };
+  
 
   const startCamera = async (deviceId) => {
     try {
