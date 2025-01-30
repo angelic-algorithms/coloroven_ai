@@ -7,18 +7,15 @@ export default function CameraScan() {
   const router = useRouter();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const holdTimeout = useRef(null);
+  const canvasRef = useRef(null);
   const [devices, setDevices] = useState([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
-  const [isHolding, setIsHolding] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [circlePos, setCirclePos] = useState({ x: 0, y: 0 });
 
   // Initialize the camera when the component mounts
   useEffect(() => {
     getCameraDevices();
-    return () => stopCamera(); // Cleanup to stop the camera when the component unmounts
+    return () => stopCamera();
   }, []);
 
   // Fetch available camera devices
@@ -67,52 +64,43 @@ export default function CameraScan() {
     startCamera(e.target.value);
   };
 
-  // Capture color on long press
-  const handleMouseDown = (event) => {
-    setIsHolding(true);
-    setCirclePos({ x: event.clientX, y: event.clientY });
-
-    let progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          captureColor(event);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 300);
-
-    holdTimeout.current = progressInterval;
+  const handleColorSelection = (event) => {
+    if (!videoRef.current || !canvasRef.current) return;
+  
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+  
+    // Set canvas dimensions to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+  
+    // Draw video frame to canvas
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    // Get bounding rect & correct position
+    const rect = video.getBoundingClientRect();
+    const scaleX = video.videoWidth / rect.width; // Scaling factor for width
+    const scaleY = video.videoHeight / rect.height; // Scaling factor for height
+  
+    // Get accurate x, y positions
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+  
+    // Get pixel data
+    const pixelData = ctx.getImageData(x, y, 1, 1).data;
+    const hexColor = `#${pixelData[0].toString(16).padStart(2, "0")}${pixelData[1].toString(16).padStart(2, "0")}${pixelData[2].toString(16).padStart(2, "0")}`;
+  
+    setSelectedColor(hexColor);
   };
+  
 
-  // Cancel long press if released early
-  const handleMouseUp = () => {
-    clearInterval(holdTimeout.current);
-    setIsHolding(false);
-    setProgress(0);
-  };
-
-  // Capture color from video
-  const captureColor = (event) => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-      const rect = videoRef.current.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      const pixelData = ctx.getImageData(x, y, 1, 1).data;
-      const hexColor = `#${pixelData[0].toString(16).padStart(2, '0')}${pixelData[1].toString(16).padStart(2, '0')}${pixelData[2].toString(16).padStart(2, '0')}`;
-
-      setSelectedColor(hexColor);
-
-      // Use router.push for navigation
-      router.push(`/color-schemes?color=${encodeURIComponent(hexColor)}&source=camera-scan`);
+  // Proceed to the next page when the "Cook" button is clicked
+  const handleCook = () => {
+    if (selectedColor) {
+      router.push(`/color-schemes?color=${encodeURIComponent(selectedColor)}&source=camera-scan`);
+    } else {
+      alert("Please select a color first.");
     }
   };
 
@@ -126,7 +114,15 @@ export default function CameraScan() {
 
       <h1 className={styles.title}>CAMERA SCAN</h1>
 
-      <strong><p className={styles.subtitle}>Click and Hold to Capture a Color</p></strong>
+      <strong><p className={styles.subtitle}>Click to Select a Color</p></strong>
+
+     <select className={styles.cameraSelect} onChange={handleDeviceChange} value={selectedDeviceId}>
+        {devices.map((device, index) => (
+          <option key={device.deviceId} value={device.deviceId}>
+            Camera {index + 1}
+          </option>
+        ))}
+      </select>
 
       {/* Camera Feed */}
       <video
@@ -134,30 +130,32 @@ export default function CameraScan() {
         autoPlay
         playsInline
         className={styles.cameraView}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
+        onClick={handleColorSelection}
       ></video>
 
-      {isHolding && (
-        <div
-          className={styles.colorCircle}
-          style={{
-            left: `${circlePos.x}px`,
-            top: `${circlePos.y}px`,
-            backgroundColor: selectedColor || 'transparent',
-          }}
-        >
-          <div className={styles.progressCircle} style={{ strokeDashoffset: 314 - (progress / 100) * 314 }}></div>
+      {/* Hidden Canvas for Color Processing */}
+      <canvas ref={canvasRef} className={styles.hiddenCanvas}></canvas>
+
+      {/* Color Display Box */}
+      {selectedColor && (
+        <div className={styles.colorDisplayContainer}>
+          <p>Selected Color:</p>
+          <div
+            className={styles.colorDisplay}
+            style={{ backgroundColor: selectedColor }}
+          ></div>
+          <p>{selectedColor}</p>
         </div>
       )}
 
-      <select className={styles.cameraSelect} onChange={handleDeviceChange} value={selectedDeviceId}>
-        {devices.map((device, index) => (
-          <option key={device.deviceId} value={device.deviceId}>
-            Camera {index + 1}
-          </option>
-        ))}
-      </select>
+      {/* Cook Button */}
+      <button
+        className={styles.cookButton}
+        onClick={handleCook}
+        disabled={!selectedColor} // Prevents clicking without selecting a color
+      >
+        COOK
+      </button>
     </div>
   );
 }

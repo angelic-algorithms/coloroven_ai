@@ -34,13 +34,14 @@
 }
 
 .cameraView {
-  width: 90%;
-  max-width: 640px;
-  height: auto;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: crosshair;
+  width: 100%;
+  max-width: 600px;
+  cursor: crosshair; /* Changes cursor to "+" */
+}
+
+.colorPreview {
+  margin-top: 15px;
+  text-align: center;
 }
 
 .colorCircle {
@@ -64,12 +65,110 @@
   stroke-dashoffset: 314;
 }
 
+.selectedColorBox {
+  width: 50px;
+  height: 50px;
+  margin: 10px auto;
+  border-radius: 8px;
+  border: 2px solid #000;
+}
+
 .cameraSelect {
-  margin-top: 15px;
+  margin-top: 5px;
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 60%;
   max-width: 200px;
+  margin-bottom: 15px;
 }
+
+.crosshair {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid red;
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* This ensures proper centering */
+  pointer-events: none; /* So it doesn’t interfere with clicking */
+  transition: transform 0.1s ease-in-out;
+}
+
+.colorDisplayContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: '';
+  position: absolute;
+  background: white;
+}
+
+.crosshair::before {
+  width: 100%;
+  height: 2px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.crosshair::after {
+  height: 100%;
+  width: 2px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.colorDisplayContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.colorLabel {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.colorDisplay {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px solid black;
+  margin: 5px;
+}
+
+
+.cookButton {
+  margin-top: 20px;
+  padding: 15px 30px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  background-color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+
+.cookButton:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.cookButton:hover:enabled {
+  background-color: #333;
+}
+
+.hiddenCanvas {
+  display: none;
+}
+
