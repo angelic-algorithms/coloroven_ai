@@ -48,16 +48,18 @@ export default function CameraScan() {
   
       setDevices(filteredDevices);
   
-      // Default to back camera if available
+      // Ensure we have a valid camera selected
       if (filteredDevices.length > 0) {
-        setSelectedDeviceId(filteredDevices[0].deviceId);
-        startCamera(filteredDevices[0].deviceId);
+        const defaultDevice = backCamera || frontCamera || filteredDevices[0]; // Prioritize back camera
+        setSelectedDeviceId(defaultDevice.deviceId);
+        startCamera(defaultDevice.deviceId);
       }
     } catch (error) {
       console.error("Error accessing camera devices:", error);
       alert("Failed to access cameras.");
     }
-  };  
+  };
+  
 
   const startCamera = async (deviceId) => {
     try {
@@ -66,13 +68,10 @@ export default function CameraScan() {
         video: { deviceId: { exact: deviceId } },
       };
   
-      if (isIOS && deviceId.includes("back")) {
-        constraints = {
-          video: {
-            deviceId: { exact: deviceId },
-            zoom: 1.0, // Sets default zoom level for iOS
-            facingMode: "environment", // Ensures correct back camera selection
-          },
+      if (isIOS) {
+        constraints.video = {
+          deviceId: { exact: deviceId },
+          facingMode: deviceId.includes("back") ? "environment" : "user", // Ensures correct camera selection
         };
       }
   
@@ -85,7 +84,8 @@ export default function CameraScan() {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
     }
-  };  
+  };
+  
 
   const stopCamera = () => {
     if (streamRef.current) {
@@ -152,6 +152,7 @@ export default function CameraScan() {
           </Link>
         </div>
 
+        {/* Camera Selector - Right */}
         <div className={styles.cameraSelectContainer}>
           <label className={styles.cameraLabel}>Select a Camera:</label>
           <select className={styles.cameraSelect} onChange={handleDeviceChange} value={selectedDeviceId}>
