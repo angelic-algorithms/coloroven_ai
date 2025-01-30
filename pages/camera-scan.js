@@ -21,11 +21,11 @@ export default function CameraScan() {
   const getCameraDevices = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
+      const videoDevices = devices.filter(device => device.kind === "videoinput");
+  
       let frontCamera = null;
       let backCamera = null;
-
+  
       videoDevices.forEach(device => {
         const label = device.label.toLowerCase();
         if ((label.includes("front") || label.includes("selfie")) && !frontCamera) {
@@ -34,20 +34,20 @@ export default function CameraScan() {
           backCamera = device;
         }
       });
-
+  
       let filteredDevices = [];
       if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
-      if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
-
+      if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera (Default)" });
+  
       if (filteredDevices.length === 0) {
         filteredDevices = videoDevices.map((device, index) => ({
           ...device,
-          customLabel: device.label || `Camera ${index + 1}`
+          customLabel: device.label || `Camera ${index + 1}`,
         }));
       }
-
+  
       setDevices(filteredDevices);
-
+  
       if (filteredDevices.length > 0) {
         setSelectedDeviceId(filteredDevices[0].deviceId);
         startCamera(filteredDevices[0].deviceId);
@@ -56,22 +56,36 @@ export default function CameraScan() {
       console.error("Error accessing camera devices:", error);
       alert("Failed to access cameras.");
     }
-  };
+  };  
 
   const startCamera = async (deviceId) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      let constraints = {
         video: { deviceId: { exact: deviceId } },
-      });
+      };
+  
+      if (isIOS) {
+        constraints = {
+          video: {
+            deviceId: { exact: deviceId },
+            zoom: 1.0, // Set default zoom level for iOS
+            facingMode: "environment", // Tries to select the standard back camera
+          },
+        };
+      }
+  
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (error) {
-      console.error('Error accessing camera:', error);
-      alert('Unable to start the camera.');
+      console.error("Error accessing camera:", error);
+      alert("Unable to start the camera.");
     }
   };
+  
 
   const stopCamera = () => {
     if (streamRef.current) {
