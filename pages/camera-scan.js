@@ -63,13 +63,10 @@ export default function CameraScan() {
   
       setDevices(filteredDevices);
   
-      // ✅ Remove reliance on deviceId - Use facingMode instead
-      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
-      const defaultCameraMode = isMobile ? "environment" : "user"; // Back camera on mobile, default on desktop
-  
-      console.log("Starting with:", defaultCameraMode);
-  
-      startCamera(defaultCameraMode); // Now using facingMode instead of deviceId
+      // ✅ Force the **front camera** as the default
+      const defaultCameraMode = "user"; // Always start with the front camera
+      setSelectedDeviceId(frontCamera?.deviceId || filteredDevices[0]?.deviceId);
+      startCamera(defaultCameraMode); // Now using `facingMode: "user"`
   
     } catch (error) {
       console.error("Error accessing camera devices:", error);
@@ -77,11 +74,10 @@ export default function CameraScan() {
     }
   };
   
-
   const startCamera = async (facingMode) => {
     try {
       const constraints = {
-        video: { facingMode: facingMode }, // No need for deviceId
+        video: { facingMode: facingMode }, // Now always starts with "user"
       };
   
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
