@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useDrag } from '@use-gesture/react';
 import styles from '../styles/CameraScan.module.css';
 
 export default function CameraScan() {
@@ -25,35 +26,34 @@ export default function CameraScan() {
   
       let frontCamera = null;
       let backCamera = null;
-  
+      let otherCameras = [];
       videoDevices.forEach(device => {
         const label = device.label.toLowerCase();
         if ((label.includes("front") || label.includes("selfie")) && !frontCamera) {
           frontCamera = device;
         } else if ((label.includes("back") || label.includes("rear")) && !backCamera) {
           backCamera = device;
+        } else {
+          otherCameras.push(device); // Store other cameras as they are
         }
       });
   
+      // If front & back cameras exist, show only them with labels
       let filteredDevices = [];
       if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
       if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
   
-      if (filteredDevices.length === 0) {
-        filteredDevices = videoDevices.map((device, index) => ({
-          ...device,
-          customLabel: device.label || `Camera ${index + 1}`,
-        }));
-      }
+      filteredDevices = [...filteredDevices, ...otherCameras];
   
       setDevices(filteredDevices);
+    
+      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
+      const defaultDevice = isMobile ? backCamera || frontCamera || filteredDevices[0] : filteredDevices[0];
   
-      // Select the first available camera (default to back)
-      if (filteredDevices.length > 0) {
-        const defaultDevice = backCamera || frontCamera || filteredDevices[0];
+      if (defaultDevice) {
         setSelectedDeviceId(defaultDevice.deviceId);
         startCamera(defaultDevice.deviceId);
-      }
+      }  
     } catch (error) {
       console.error("Error accessing camera devices:", error);
       alert("Failed to access cameras.");
@@ -64,21 +64,25 @@ export default function CameraScan() {
   const startCamera = async (deviceId) => {
     try {
       const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
+
+      // If no specific camera was chosen, default to the back camera
+      let selectedDevice = devices.find((device) => device.deviceId === deviceId);
+      if (!selectedDevice && isMobile) {
+        selectedDevice = devices.find((device) => device.customLabel === "Back Camera") || devices[0];
+      }
+
+      if (!selectedDevice) {
+        console.error("No valid camera found.");
+        return;
+      }
+
       let constraints = {
-        video: { deviceId: { exact: deviceId } },
+        video: { deviceId: { exact: selectedDevice.deviceId } },
       };
   
       if (isIOS) {
-        constraints.video = {
-          deviceId: { exact: deviceId },
-          facingMode: "user", // Default to front camera, overridden by selection
-        };
-  
-        // Ensure selected camera is used correctly
-        const selectedCamera = devices.find((device) => device.deviceId === deviceId);
-        if (selectedCamera && selectedCamera.customLabel.includes("Back Camera")) {
-          constraints.video.facingMode = "environment";
-        }
+        constraints.video.facingMode = selectedDevice.customLabel === "Back Camera" ? "environment" : "user";
       }
   
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -90,7 +94,7 @@ export default function CameraScan() {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
     }
-  };  
+  };
   
 
   const stopCamera = () => {
@@ -132,12 +136,17 @@ export default function CameraScan() {
     // Show magnifier with selected color
     setColorMagnifier({
       color: hexColor,
-      x: event.clientX,
-      y: event.clientY
+      x: event.pageX,
+      y: event.pageY
     });
+    // // Hide magnifier after 1 second
+    // setTimeout(() => setColorMagnifier(null), 1000);
+  };
 
-    // Hide magnifier after 1 second
-    setTimeout(() => setColorMagnifier(null), 1000);
+  const bind = useDrag(({ event }) => handleColorSelection(event));
+
+  const handlePointerDown = (event) => {
+    handleColorSelection(event);
   };
 
   const handleCook = () => {
@@ -173,9 +182,11 @@ export default function CameraScan() {
 
       <h1 className={styles.title}>CAMERA SCAN</h1>
 
-      <strong><p className={styles.subtitle}>Select a Color From the Video Feed</p></strong>
+      <strong><p className={styles.subtitle}>Drag your finger or cursor to select a color</p></strong>
 
-      <video ref={videoRef} autoPlay playsInline className={styles.cameraView} onClick={handleColorSelection}></video>
+      <div className={styles.videoContainer} {...bind()} onPointerDown={handlePointerDown}>
+        <video ref={videoRef} autoPlay playsInline className={styles.cameraView} />
+      </div>
 
       <canvas ref={canvasRef} className={styles.hiddenCanvas}></canvas>
       
