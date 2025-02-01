@@ -21,87 +21,74 @@ export default function CameraScan() {
 
   const getCameraDevices = async () => {
     try {
+      // ✅ Request camera permission first (ensures MacBook & Safari show device labels)
+      await navigator.mediaDevices.getUserMedia({ video: true });
+  
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === "videoinput");
+  
+      if (videoDevices.length === 0) {
+        console.error("No video devices found.");
+        alert("No cameras detected.");
+        return;
+      }
   
       let frontCamera = null;
       let backCamera = null;
       let otherCameras = [];
+  
       videoDevices.forEach(device => {
         const label = device.label.toLowerCase();
-        if ((label.includes("front") || label.includes("selfie")) && !frontCamera) {
+        if (label.includes("front") || label.includes("selfie")) {
           frontCamera = device;
-        } else if ((label.includes("back") || label.includes("rear")) && !backCamera) {
+        } else if (label.includes("back") || label.includes("rear")) {
           backCamera = device;
         } else {
-          otherCameras.push(device); // Store other cameras as they are
+          otherCameras.push(device);
         }
       });
   
-      // If front & back cameras exist, show only them with labels
+      // Create labeled device list
       let filteredDevices = [];
       if (frontCamera) filteredDevices.push({ ...frontCamera, customLabel: "Front Camera" });
       if (backCamera) filteredDevices.push({ ...backCamera, customLabel: "Back Camera" });
   
-      filteredDevices = [...filteredDevices, ...otherCameras];
+      // If no front/back cameras, use available cameras with original labels
+      if (filteredDevices.length === 0) {
+        filteredDevices = otherCameras.map(device => ({
+          ...device,
+          customLabel: device.label || "Default Camera",
+        }));
+      }
   
       setDevices(filteredDevices);
-    
-      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
-      const defaultDevice = isMobile ? backCamera || frontCamera || filteredDevices[0] : filteredDevices[0];
   
-      if (defaultDevice) {
-        setSelectedDeviceId(defaultDevice.deviceId);
-        startCamera(defaultDevice.deviceId, defaultDevice.customLabel);
-      }  
+      // ✅ Remove reliance on deviceId - Use facingMode instead
+      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
+      const defaultCameraMode = isMobile ? "environment" : "user"; // Back camera on mobile, default on desktop
+  
+      console.log("Starting with:", defaultCameraMode);
+  
+      startCamera(defaultCameraMode); // Now using facingMode instead of deviceId
+  
     } catch (error) {
       console.error("Error accessing camera devices:", error);
-      alert("Failed to access cameras.");
+      alert("Failed to access cameras. Please allow camera permissions.");
     }
   };
   
 
-  const startCamera = async (deviceId, label) => {
+  const startCamera = async (facingMode) => {
     try {
-      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-      const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
-
-      // If no specific camera was chosen, default to the back camera
-      let selectedDevice = devices.find((device) => device.deviceId === deviceId);
-      if (!selectedDevice && isMobile) {
-        selectedDevice = devices.find((device) => device.customLabel === "Back Camera") || devices[0];
-      }
-
-      if (!selectedDevice) {
-        console.error("No valid camera found.");
-        return;
-      }
-
-      setSelectedDeviceId(selectedDevice.deviceId);
-
-      let constraints = {
-        video: { deviceId: { exact: selectedDevice.deviceId } },
+      const constraints = {
+        video: { facingMode: facingMode }, // No need for deviceId
       };
-  
-      if (isIOS) {
-        constraints.video.facingMode = selectedDevice.customLabel === "Back Camera" ? "environment" : "user";
-        delete constraints.video.deviceId;  // ✅ iOS requires either `facingMode` or `deviceId`, not both.
-      }
   
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-
-       // ✅ Update the dropdown label after starting the camera
-      setDevices((prevDevices) =>
-        prevDevices.map((device) =>
-          device.deviceId === deviceId
-            ? { ...device, customLabel: label || device.customLabel }
-            : device
-        )
-      );
     } catch (error) {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
