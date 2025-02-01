@@ -77,6 +77,8 @@ export default function CameraScan() {
         return;
       }
 
+      setSelectedDeviceId(selectedDevice.deviceId);
+
       let constraints = {
         video: { deviceId: { exact: selectedDevice.deviceId } },
       };
