@@ -52,7 +52,7 @@ export default function CameraScan() {
   
       if (defaultDevice) {
         setSelectedDeviceId(defaultDevice.deviceId);
-        startCamera(defaultDevice.deviceId);
+        startCamera(defaultDevice.deviceId, defaultDevice.customLabel);
       }  
     } catch (error) {
       console.error("Error accessing camera devices:", error);
@@ -61,7 +61,7 @@ export default function CameraScan() {
   };
   
 
-  const startCamera = async (deviceId) => {
+  const startCamera = async (deviceId, label) => {
     try {
       const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
       const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
@@ -85,6 +85,7 @@ export default function CameraScan() {
   
       if (isIOS) {
         constraints.video.facingMode = selectedDevice.customLabel === "Back Camera" ? "environment" : "user";
+        delete constraints.video.deviceId;  // ✅ iOS requires either `facingMode` or `deviceId`, not both.
       }
   
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -92,6 +93,15 @@ export default function CameraScan() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
+
+       // ✅ Update the dropdown label after starting the camera
+      setDevices((prevDevices) =>
+        prevDevices.map((device) =>
+          device.deviceId === deviceId
+            ? { ...device, customLabel: label || device.customLabel }
+            : device
+        )
+      );
     } catch (error) {
       console.error("Error accessing camera:", error);
       alert("Unable to start the camera.");
@@ -107,8 +117,13 @@ export default function CameraScan() {
   };
 
   const handleDeviceChange = (e) => {
-    setSelectedDeviceId(e.target.value);
-    startCamera(e.target.value);
+    const selectedId = e.target.value;
+    const selectedCamera = devices.find(device => device.deviceId === selectedId);
+    
+    if (selectedCamera) {
+      setSelectedDeviceId(selectedId);
+      startCamera(selectedId, selectedCamera.customLabel); // ✅ Now updates label properly
+    }
   };
 
   const handleColorSelection = (event) => {
