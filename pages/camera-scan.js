@@ -22,7 +22,7 @@ export default function CameraScan() {
   const getCameraDevices = async () => {
     try {
       // ✅ Request camera permission first (ensures MacBook & Safari show device labels)
-      await navigator.mediaDevices.getUserMedia({ video: true });
+      // await navigator.mediaDevices.getUserMedia({ video: true });
   
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === "videoinput");
@@ -111,40 +111,40 @@ export default function CameraScan() {
 
   const handleColorSelection = (event) => {
     if (!videoRef.current || !canvasRef.current) return;
-
+  
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-
+  
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
+  
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+  
     const rect = video.getBoundingClientRect();
     const scaleX = video.videoWidth / rect.width;
     const scaleY = video.videoHeight / rect.height;
-
+  
     const x = (event.clientX - rect.left) * scaleX;
     const y = (event.clientY - rect.top) * scaleY;
-
+  
     const pixelData = ctx.getImageData(x, y, 1, 1).data;
     const hexColor = `#${pixelData[0].toString(16).padStart(2, "0")}${pixelData[1].toString(16).padStart(2, "0")}${pixelData[2].toString(16).padStart(2, "0")}`;
-
+  
     setSelectedColor(hexColor);
-
-    // Show magnifier with selected color
+  
+    // ✅ Ensure Magnifier Works on Every Click
     setColorMagnifier({
       color: hexColor,
       x: event.pageX,
       y: event.pageY
     });
-    // // Hide magnifier after 1 second
-    // setTimeout(() => setColorMagnifier(null), 1000);
   };
 
-  const bind = useDrag(({ event }) => handleColorSelection(event));
-
+  const bind = useDrag(({ event }) => {
+    handleColorSelection(event);
+  });
+  
   const handlePointerDown = (event) => {
     handleColorSelection(event);
   };
@@ -210,6 +210,8 @@ export default function CameraScan() {
             left: `${colorMagnifier.x}px`,
             top: `${colorMagnifier.y}px`,
             backgroundColor: colorMagnifier.color,
+            transition: "opacity 0.3s ease-in-out", // ✅ Smoothly fades out
+            opacity: selectedColor ? 1 : 0, // ✅ Remains visible while selecting
           }}
         ></div>
       )}

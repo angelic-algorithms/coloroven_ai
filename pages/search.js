@@ -4,113 +4,97 @@ import { useState, useEffect } from 'react';
 import styles from '../styles/Search.module.css';
 
 export default function Search() {
-  const router = useRouter();
-  const { color, colors } = router.query;
-  const [query, setQuery] = useState('');
-  const [chatResponse, setChatResponse] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+    const router = useRouter();
+    const { color, colors } = router.query;
+    const [query, setQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-  // Decode color query parameter and ensure they are valid
-  const selectedColors = colors ? decodeURIComponent(colors).split('|').map(color => color.trim()) : [];
+    const selectedColors = colors ? decodeURIComponent(colors).split('|').map(color => color.trim()) : [];
 
-  const isValidColor = (color) => {
-    const hexPattern = /^#[0-9A-Fa-f]{6}$/;
-    const rgbPattern = /^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/;
-    return hexPattern.test(color) || rgbPattern.test(color);
-  };
+    useEffect(() => {
+        if (!colors) {
+            router.push('/color-schemes'); // Redirect if no colors are selected
+        }
+    }, [colors, router]);
 
-useEffect(() => {
-  if (!colors) {
-      router.push('/color-schemes'); // Redirect if no colors are selected
-    }
-  }, [colors, router]);
-
-  const handleSearch = async () => {
-    if (!query) return alert('Please enter a search query.');
-
-    try {
-      const response = await fetch('/api/gpt-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, colors: colors.split('|') }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch AI response');
+    const handleSearch = async () => {
+      if (!query) return alert('Please enter a search query.');
+  
+      setLoading(true);
+      try {
+          const response = await fetch('/api/ebay-search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ query, colors: selectedColors }),
+          });
+  
+          console.log("API Response Status:", response.status);
+          const data = await response.json();
+          console.log("API Response Data:", data);
+  
+          if (!response.ok) {
+              throw new Error(`API Error: ${data.error || "Unknown error"}`);
+          }
+  
+          setSearchResults(data || []);
+      } catch (error) {
+          console.error('Error:', error);
+          alert(error.message);
+      } finally {
+          setLoading(false);
       }
-
-      const data = await response.json();
-      setChatResponse(data.response);
-
-      // Extracting formatted results from AI response
-      const parsedResults = data.response.match(/\[(.*?)\]\((.*?)\)/g) || [];
-      const formattedResults = parsedResults.map((item) => {
-        const match = item.match(/\[(.*?)\]\((.*?)\)/);
-        return { name: match[1], link: match[2] };
-      });
-
-      setSearchResults(formattedResults);
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error fetching AI response');
-    }
   };
-    
-    
-    
-  return (
-    <div className={styles.container}>
-      <div className={styles.backButton}>
-        <Link href={`/color-schemes?color=${encodeURIComponent(color)}&colors=${encodeURIComponent(selectedColors.join('|'))}`}>
-          <button className={styles.backButtonText}>← BACK</button>
-        </Link>;
-      </div>
+  
 
-      <h1 className={styles.title}>SEARCH COLORS</h1>
+    return (
+        <div className={styles.container}>
+            <div className={styles.topBar}>
+                <div className={styles.backButton}>
+                    <Link href={`/color-schemes?color=${encodeURIComponent(color)}&colors=${encodeURIComponent(selectedColors.join('|'))}`}>
+                        <button className={styles.backButtonText}>← BACK</button>
+                    </Link>
+                </div>
+                <h1 className={styles.title}>SEARCH COLORS</h1>
+            </div>
 
-      <div className={styles.selectedColors}>
-        {selectedColors.map((color, index) => {
-          const validColor = isValidColor(color) ? color : '#CCCCCC';
-          return(
-          <div
-            key={index}
-            className={styles.colorBox}
-            style={{
-              backgroundColor: validColor,
-            }}
-          ></div>
-          );
-        })}
-      </div>
+            <div className={styles.selectedColors}>
+                {selectedColors.map((color, index) => (
+                    <div
+                        key={index}
+                        className={styles.colorBox}
+                        style={{ backgroundColor: color }}
+                    ></div>
+                ))}
+            </div>
 
-      <input
-        type="text"
-        className={styles.searchInput}
-        placeholder="Type your color query"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+            <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Type the item you're looking for (e.g., hat, shoes)"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+            />
 
-      <button className={styles.searchButton} onClick={handleSearch}>
-        SEARCH
-      </button>
+            <button className={styles.searchButton} onClick={handleSearch} disabled={loading}>
+                {loading ? "Searching..." : "SEARCH"}
+            </button>
 
-      {searchResults.length > 0 ? (
-        <div className={styles.searchResults}>
-          <h2>Search Results:</h2>
-          <ul>
-            {searchResults.map((item, index) => (
-              <li key={index}>
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                  {item.name}
-                </a>
-              </li>
-            ))}
-          </ul>
+            {searchResults.length > 0 ? (
+                <div className={styles.searchResults}>
+                    <h2>Search Results:</h2>
+                    <div className={styles.productGrid}>
+                        {searchResults.map((product, index) => (
+                            <a key={index} href={product.link} target="_blank" rel="noopener noreferrer" className={styles.productItem}>
+                                <img src={product.image} alt={product.title} className={styles.productImage} />
+                                <p className={styles.productName}>{product.title}</p>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                loading ? <p className={styles.loading}>Searching for products...</p> : <p className={styles.noResults}>No results found.</p>
+            )}
         </div>
-      ) : (
-        chatResponse && <p className={styles.response}>{chatResponse}</p>
-      )}
-    </div>
-  );
+    );
 }
