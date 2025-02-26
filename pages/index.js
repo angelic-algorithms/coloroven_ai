@@ -1,67 +1,103 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
-import styles from '../styles/Home.module.css';
-import { useState, useRef } from 'react';
+import ColorWheel from '@uiw/react-color-wheel';
+import { hexToHsl, hslToHex } from '../utils/colorUtils'; // Ensure this exists
+import styles from '../styles/ManualEntry.module.css';
 
 export default function Home() {
-  const [cameraAccess, setCameraAccess] = useState(false);
-  const [checkingCamera, setCheckingCamera] = useState(false);
-  let mediaStream = useRef(null);
+  const router = useRouter();
 
-  const requestCameraAccess = async () => {
-    setCheckingCamera(true);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      mediaStream.current = stream;
-      if (stream) {
-        setCameraAccess(true);
-      }
-    } catch (error) {
-      console.error('Camera access denied:', error);
-      alert('Camera access is required to use this feature.');
+  // State for color selection
+  const [color, setColor] = useState('#ffffff');
+  const [inputValue, setInputValue] = useState(color);
+  const [error, setError] = useState('');
+
+  const hexPattern = /^#([0-9A-Fa-f]{6})$/;
+
+  useEffect(() => {
+    if (router.query.color && hexPattern.test(router.query.color)) {
+      setColor(router.query.color);
+      setInputValue(router.query.color);
     }
-    setCheckingCamera(false);
+  }, [router.query.color]);
+
+  // Handle color change from the Color Wheel
+  const handleColorChange = (newColor) => {
+    setColor(newColor.hex);
+    setInputValue(newColor.hex.toUpperCase());
+    setError('');
   };
 
-  // Function to stop camera stream
-  const stopCameraStream = () => {
-    if (mediaStream.current) {
-      mediaStream.current.getTracks().forEach((track) => track.stop());
-      mediaStream.current = null;
+  // Handle manual hex input
+  const handleHexInputChange = (e) => {
+    const newHex = e.target.value.toUpperCase();
+    setInputValue(newHex);
+
+    if (hexPattern.test(newHex)) {
+      setColor(newHex);
+      setError('');
+    } else {
+      setError('Invalid HEX format. Use #RRGGBB');
     }
   };
 
+  // Navigate to the color schemes page
+  const handleCook = () => {
+    if (!hexPattern.test(color)) {
+      setError('Please enter a valid hex color before proceeding.');
+      return;
+    }
+    router.push(`/color-schemes?color=${encodeURIComponent(color)}&source=manual-entry`);
+  };
 
   return (
     <div className={styles.container}>
+      {/* Title */}
       <h1 className={styles.title}>COLOR OVEN</h1>
 
-      {/* Manual Entry Button */}
-      <Link href="/manual-entry">
-        <button className={`${styles.button} ${styles.colorPicker}`}
-                onClick={stopCameraStream}
-        >
-          MANUAL ENTRY
-          <span className="ml-3">
-          </span>
-        </button>
-      </Link>
+      {/* Color Wheel */}
+      <div className={styles.ovenFrame}>
+        <div className={styles.colorWheelContainer}>
+          <ColorWheel color={color} onChange={handleColorChange} />
+        </div>
+      </div>
 
-      {/* Camera Button - dynamically updates based on access */}
-      {cameraAccess ? (
-        <Link href="/camera-scan">
-          <button className={`${styles.button} ${styles.cameraEnabled}`}>
-            USE CAMERA
-          </button>
-        </Link>
-      ) : (
-        <button
-          className={`${styles.button} ${styles.cameraDisabled}`}
-          onClick={requestCameraAccess}
-          disabled={checkingCamera}
-        >
-          {checkingCamera ? 'CHECKING CAMERA...' : 'REQUEST CAMERA'}
-        </button>
-      )}
+      <div className={styles.knobsContainer}>
+        <div className={styles.knob}></div>
+        <div className={styles.knob}></div>
+        <div className={styles.knob}></div>
+      </div>
+
+
+      {/* Hex Input */}
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleHexInputChange}
+        className={`${styles.hexInput} ${error ? styles.inputError : ''}`}
+        placeholder="#FFFFFF"
+      />
+      {error && <p className={styles.error}>{error}</p>}
+
+      {/* Color Preview */}
+      <div className={styles.colorDisplayContainer}>
+        <p className={styles.colorDisplayText}>Selected Color</p>
+        <div className={styles.panContainer}>
+          <div className={styles.panHandle}></div> {/* Move handle before the pan */}
+          <div
+            className={styles.colorPan}
+            style={{ backgroundColor: color }}
+          ></div>
+        </div>
+      </div>
+
+
+      {/* Cook Button */}
+      <button onClick={handleCook} className={styles.ovenButton}>
+        <div className={styles.indicatorLight}></div>
+        <span className={styles.ovenText}>COOK</span>
+      </button>
     </div>
   );
 }
