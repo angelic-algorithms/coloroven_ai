@@ -45,7 +45,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
   width: 100%;
 }
 
@@ -107,6 +106,7 @@
 
 /* Hex Input */
 .hexInput {
+  top: 5%;
   padding: 12px 16px;
   width: 200px;
   font-size: 1rem;
@@ -115,6 +115,8 @@
   text-align: center;
   transition: all 0.3s ease;
   outline: none;
+  margin-top: 5%;
+
 }
 
 .hexInput:focus {
@@ -139,7 +141,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 15px;
 }
 
 .colorDisplayText {
