@@ -10,11 +10,12 @@
     linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
     url('https://www.transparenttextures.com/patterns/asfalt-light.png');
-
-
   background-size: 50px 50px; /* Tile size */
   font-family: 'Poppins', sans-serif;
   padding: 20px;
+  position: relative;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .container::before {
@@ -26,6 +27,7 @@
   bottom: 0;
   box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.1);
   pointer-events: none;
+  z-index: -1;
 }
 
 /* Title */
@@ -35,6 +37,30 @@
   color: #333;
   margin-bottom: 40px;
   text-align: center;
+}
+
+/* Flex Wrapper for Centering Elements */
+.centerWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+}
+
+/* Color Wheel Container */
+.ovenFrame {
+  border: 8px solid #444;
+  border-radius: 12px;
+  padding: 16px;
+  background: linear-gradient(145deg, #3a3a3a, #2e2e2e);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .colorWheelContainer {
@@ -56,17 +82,7 @@
   }
 }
 
-.ovenFrame {
-  border: 8px solid #444;
-  border-radius: 12px;
-  padding: 16px;
-  background: linear-gradient(145deg, #3a3a3a, #2e2e2e);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
-  position: relative;
-  width: fit-content;
-  margin: 0 auto;
-}
-
+/* Knobs */
 .knobsContainer {
   display: flex;
   justify-content: center;
@@ -89,14 +105,8 @@
   transform: scale(1.2);
 }
 
-
-.colorWheelContainer:hover {
-  transform: scale(1.05);
-}
-
 /* Hex Input */
 .hexInput {
-  margin-top: 30px;
   padding: 12px 16px;
   width: 200px;
   font-size: 1rem;
@@ -125,8 +135,11 @@
 
 /* Color Display */
 .colorDisplayContainer {
-  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  margin-top: 30px;
 }
 
 .colorDisplayText {
@@ -135,138 +148,14 @@
   margin-bottom: 10px;
 }
 
-/* Color Display Box */
-.colorDisplayBox {
-  width: 100px;
-  height: 100px;
-  border-radius: 12px;
-  border: 2px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: background-color 0.3s ease;
-}
-
-/* Heatwaves Overlay */
-.heatWaves {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  width: 60px;
-  height: 20px;
-  background: transparent;
-  border-radius: 50%;
-  border-top: 3px solid rgba(255, 150, 100, 0.5);
-  animation: wave 2s infinite ease-in-out;
-  pointer-events: none; /* Ensure clicks go through */
-}
-
-@keyframes wave {
-  0% {
-    transform: translateX(-50%) translateY(0) scaleX(1);
-  }
-  50% {
-    transform: translateX(-50%) translateY(-10px) scaleX(1.2);
-  }
-  100% {
-    transform: translateX(-50%) translateY(0) scaleX(1);
-  }
-}
-
-
-/* Cook Button */
-.cookButton {
-  margin-top: 40px;
-  padding: 14px 28px;
-  font-size: 1.2rem;
-  background-color: #ff7a59;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.cookButton:hover {
-  background-color: #ff5722;
-  transform: translateY(-3px);
-}
-
-.cookButton:active {
-  transform: translateY(0);
-}
-
-/* Back Link */
-.backLink {
-  margin-top: 30px;
-  font-size: 0.9rem;
-  color: #007bff;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.backLink:hover {
-  color: #0056b3;
-}
-
-/* Oven Button */
-.ovenButton {
-  position: relative;
-  background-color: #444;
-  border: 3px solid #333;
-  border-radius: 8px;
-  padding: 16px 32px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  margin-top: 40px; /* Add this for spacing */
-}
-
-.ovenButton:hover {
-  background-color: #555;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
-}
-
-
-/* Indicator Light */
-.indicatorLight {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #ff4d4f;
-  box-shadow: 0 0 10px rgba(255, 77, 79, 0.7);
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-/* Cook Text */
-.ovenText {
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-/* Pulse Animation for Light */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(255, 77, 79, 0.9);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
-  }
-}
-
 /* Pan Container */
 .panContainer {
   position: relative;
   width: 120px;
   height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -282,6 +171,20 @@
   position: relative;
   z-index: 2;
   overflow: hidden; /* Ensure bubbles stay inside */
+}
+
+/* Enhanced Pan Handle */
+.panHandle {
+  position: absolute;
+  top: 50%;
+  right: -45px;
+  width: 60px;
+  height: 16px;
+  background-color: #444;
+  border-radius: 8px 16px 16px 8px; /* Rounded edges */
+  transform: translateY(-50%);
+  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 1; /* Behind the pan */
 }
 
 /* Simmering Bubbles */
@@ -321,23 +224,74 @@
   }
 }
 
-/* Enhanced Pan Handle */
-.panHandle {
-  position: absolute;
-  top: 50%;
-  right: -45px;
-  width: 60px;
-  height: 16px;
+/* Cook Button */
+.ovenButton {
+  position: relative;
   background-color: #444;
-  border-radius: 8px 16px 16px 8px; /* Rounded edges */
-  transform: translateY(-50%);
-  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
-  z-index: 1; /* Behind the pan */
+  border: 3px solid #333;
+  border-radius: 8px;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 40px;
 }
 
-/* Optional Hover Effect */
-.colorPan:hover {
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.3);
+.ovenButton:hover {
+  background-color: #555;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
+/* Indicator Light */
+.indicatorLight {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ff4d4f;
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.7);
+  animation: pulse 1.5s infinite ease-in-out;
+}
 
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(255, 77, 79, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
+  }
+}
+
+/* Scroll Indicator */
+.scrollIndicator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 1rem;
+  color: #333;
+  animation: bounce 2s infinite;
+  z-index: 100;
+}
+
+.arrowUp {
+  font-size: 2rem;
+  display: block;
+  margin-top: 5px;
+  animation: arrowBounce 1.5s infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
