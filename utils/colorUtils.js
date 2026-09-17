@@ -36,4 +36,16 @@ export function hexToHsl(hex) {
     };
     return `#${f(0)}${f(8)}${f(4)}`;
   }
-  
+
+  // Pick a readable ink/cream text color for text sitting directly on a hex background
+  export function getReadableTextColor(hex) {
+    const toLinear = (c) => {
+      const cs = c / 255;
+      return cs <= 0.04045 ? cs / 12.92 : Math.pow((cs + 0.055) / 1.055, 2.4);
+    };
+    const r = parseInt(hex.substring(1, 3), 16);
+    const g = parseInt(hex.substring(3, 5), 16);
+    const b = parseInt(hex.substring(5, 7), 16);
+    const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    return luminance > 0.42 ? '#241d1a' : '#fdf6ee';
+  }

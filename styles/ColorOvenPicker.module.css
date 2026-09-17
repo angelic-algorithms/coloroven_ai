@@ -1,0 +1,369 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+@media (min-width: 920px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4.5rem;
+    padding: 2rem 0;
+  }
+}
+
+/* ---------- Oven column ---------- */
+
+.ovenColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ovenFrame {
+  position: relative;
+  width: 300px;
+  border-radius: 26px;
+  padding: 16px 20px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  background: linear-gradient(155deg, var(--oven-charcoal-light), var(--oven-charcoal));
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.04),
+    inset 0 8px 24px rgba(0, 0, 0, 0.45),
+    0 20px 45px var(--shadow-warm);
+}
+
+.controlPanel {
+  width: 100%;
+}
+
+/* LED-style readout, doubles as the hex input */
+.ledDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0b0b0c;
+  border-radius: 8px;
+  padding: 9px 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.ledDisplay:focus-within {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.85), 0 0 0 2px rgba(255, 122, 69, 0.4);
+}
+
+.ledDot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.ledInput {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.ledError {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ff5c5c;
+  text-shadow: 0 0 6px rgba(255, 92, 92, 0.7);
+}
+
+.doorGlow {
+  border-radius: 50%;
+  box-shadow:
+    0 0 24px 2px var(--glow-color, var(--ember)),
+    0 0 48px 8px color-mix(in srgb, var(--glow-color, var(--ember)) 45%, transparent);
+  animation: doorPulse 2.6s ease-in-out infinite alternate;
+  transition: box-shadow 0.25s ease;
+}
+
+@keyframes doorPulse {
+  from {
+    filter: brightness(0.94);
+  }
+  to {
+    filter: brightness(1.08);
+  }
+}
+
+.doorFlash {
+  animation: doorFlashPop 0.38s ease-out;
+}
+
+@keyframes doorFlashPop {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  45% {
+    transform: scale(1.07);
+    filter: brightness(1.6);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.doorBezel {
+  border-radius: 50%;
+  padding: 9px;
+  background: linear-gradient(155deg, #d7dadc, #83878b 45%, #4b4f53);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.wheelWell {
+  border-radius: 50%;
+  background: var(--cream);
+  padding: 14px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.doorHandle {
+  width: 72%;
+  height: 12px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #dcdedf, #8b8f92 55%, #55585b);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.knobRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 6px 0;
+}
+
+.actionRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cookButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ember);
+  color: var(--oven-charcoal);
+  border: none;
+  border-radius: 14px;
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.15s ease;
+}
+
+.cookButton:hover {
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.indicatorLight {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--oven-charcoal);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.surpriseWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.surpriseButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #2a2320;
+  background: radial-gradient(circle at 35% 30%, #ff8a5c, var(--ember) 65%, #d85a2b);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.surpriseButton:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+
+.surpriseCore {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.surpriseLabel {
+  margin: 0;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(253, 246, 238, 0.5);
+}
+
+.feet {
+  position: absolute;
+  bottom: -9px;
+  left: 26px;
+  right: 26px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.feet span {
+  width: 16px;
+  height: 10px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(180deg, var(--oven-charcoal), #1a1512);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Instruction manual ---------- */
+
+.manual {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: var(--paper);
+  border-radius: 6px;
+  padding: 1.75rem 1.75rem 1.5rem 2.75rem;
+  box-shadow: 0 14px 34px rgba(120, 96, 60, 0.18);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 33px,
+    rgba(43, 35, 32, 0.06) 34px
+  );
+}
+
+.manualHoles {
+  position: absolute;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  left: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.manualHoles span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cream);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.25);
+}
+
+.manualSection {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+
+.manualTitle {
+  margin: 0.35rem 0 0.9rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.manualRule {
+  border: none;
+  border-top: 1px dashed rgba(43, 35, 32, 0.3);
+  margin: 0.75rem 0;
+}
+
+.manualSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.manualSteps li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.manualSteps strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.manualSteps li > span:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.manualCaption {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
