@@ -1,0 +1,267 @@
+.wrapper {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.25rem;
+}
+
+@media (max-width: 640px) {
+  .header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+.backButton {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--on-color, var(--ink-soft));
+  opacity: 0.72;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem;
+  transition: opacity 0.15s ease, color 0.4s ease;
+}
+
+.backButton:hover {
+  opacity: 1;
+}
+
+.headerText {
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-color, var(--ember));
+  opacity: 0.8;
+  transition: color 0.4s ease;
+}
+
+.heading {
+  margin: 0.3rem 0 0;
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--on-color, var(--ink));
+  transition: color 0.4s ease;
+}
+
+.baseColor {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-self: end;
+}
+
+@media (max-width: 640px) {
+  .baseColor {
+    justify-self: center;
+  }
+}
+
+.baseSwatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.baseHex {
+  font-weight: 600;
+  color: var(--on-color, var(--ink-soft));
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.4s ease;
+}
+
+/* Mobile-first: an even 2-column grid, so there's never a lonely last row */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem 1rem;
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Wide screens: arrange the plates like a lazy susan around the table */
+@media (min-width: 860px) {
+  .grid {
+    display: block;
+    position: relative;
+    width: min(560px, 58vw);
+    aspect-ratio: 1;
+    margin: 5.5rem auto 4rem;
+  }
+}
+
+.settingSlot {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 860px) {
+  .settingSlot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32%;
+    transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(-128%)
+      rotate(calc(-1 * var(--angle, 0deg)));
+  }
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* A little folded place-card, like buffet signage, propped in front of the plate */
+.tentCard {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -14px;
+  background: var(--paper);
+  padding: 0.4rem 0.9rem 0.5rem;
+  border-radius: 3px 3px 8px 8px;
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--ink);
+  box-shadow: 0 6px 12px rgba(43, 35, 32, 0.18);
+  white-space: nowrap;
+}
+
+.tentCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border-top: 1px dashed rgba(43, 35, 32, 0.25);
+  top: 45%;
+  height: 0;
+}
+
+.plate {
+  position: relative;
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #ffffff, #f5efe2 80%);
+  box-shadow:
+    inset 0 0 0 12px #fff,
+    inset 0 0 0 13px rgba(43, 35, 32, 0.08),
+    inset 0 2px 5px rgba(43, 35, 32, 0.06),
+    0 16px 30px rgba(43, 35, 32, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.plateSkeleton {
+  background: linear-gradient(120deg, #fff, var(--cream-dim), #fff);
+  background-size: 200% 200%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.steam {
+  position: absolute;
+  top: 10%;
+  left: 46%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent 70%);
+  pointer-events: none;
+}
+
+.steamRight {
+  left: 58%;
+  top: 14%;
+}
+
+.swatchCluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 78%;
+}
+
+.swatch {
+  position: relative;
+  width: 20%;
+  min-width: 42px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    inset 0 -4px 6px rgba(0, 0, 0, 0.12),
+    inset 0 3px 4px rgba(255, 255, 255, 0.5),
+    0 4px 8px rgba(43, 35, 32, 0.18);
+  transition: transform 0.15s ease;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatchLabel {
+  position: absolute;
+  bottom: -1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.swatch:hover .swatchLabel,
+.swatch:focus-visible .swatchLabel {
+  opacity: 1;
+}
+
+.errorText {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 3rem 0;
+}
